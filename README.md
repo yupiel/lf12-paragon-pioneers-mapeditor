@@ -1,1 +1,1 @@
-# lf12-paragon-pioneers-mapeditor
+# LF12 Paragon Pioneers Map Editor
