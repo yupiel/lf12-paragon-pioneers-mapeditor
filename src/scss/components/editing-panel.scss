@@ -1,0 +1,49 @@
+.EditingPanel {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+
+    height: 500px;
+    width: 180px;
+
+    .toggle {
+        cursor: pointer;
+        width: 20px;
+    }
+
+    .EditingPanel__open {
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        overflow-x: hidden;
+        transition: 0.5s;
+
+        background-color: gray;
+
+        .toggle {
+            cursor: pointer;
+            width: 20px;
+        }
+
+        .grid {
+            display: grid;
+            column-gap: 2px;
+            row-gap: 2px;
+
+            .tile {
+                cursor: pointer;
+                background-color: lightblue;
+                font-size: 14;
+                height: 50px;
+                width: 50px;
+                margin: 2px;
+                text-align: center;
+            }
+        }
+    }
+}
