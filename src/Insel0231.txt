@@ -1,0 +1,23 @@
+*****************************
+*  Paragon Pioneers - Map	*	
+*  W - Wasser				*
+*  K - Küste				*
+*  G - Gebirge				*
+*  0 - Grasfeld				*
+*  1 - Gras mit 1 Baum		*
+*  2 - Gras mit 2 Baum		*
+*  3 - Gras mit 3 Baum		*
+*****************************
+Inselchen
+X: 11, Y: 11
+WWWWWWWWWWW
+WKKKWWWWWWW
+WK3KKKKKKKW
+WK0232130KW
+WKK311GGGKW
+WKK121G2GKW
+WK2123GGGKW
+WKKK31221KW
+WWWKKKKKKKW
+WWWWWWWWWWW
+WWWWWWWWWWW
