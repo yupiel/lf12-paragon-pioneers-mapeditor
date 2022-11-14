@@ -1,4 +1,4 @@
-import { MapData, Tile, visualizeCoast, visualizeMountains, COAST_VARIATION, MOUNTAIN_VARIATION, TILE_TYPE } from "@/controller/map-logic-controller"
+import { MapData, Tile, visualizeCoast, visualizeMountains, COAST_VARIATION, MOUNTAIN_VARIATION, TILE_TYPE, visualizeGrass, GRASS_VARIATION } from "@/controller/map-logic-controller"
 import { useState } from "react"
 
 import './map-view.scss'
@@ -24,7 +24,10 @@ export const DisplayMap = (props: DisplayMapProps) => {
                                     ? visualizeCoast.get(tile.tileVariation as COAST_VARIATION)
                                     : tile.tileType === TILE_TYPE.MOUNTAIN
                                         ? visualizeMountains.get(tile.tileVariation as MOUNTAIN_VARIATION)
-                                        : visualizeCoast.get(undefined)}
+                                        : tile.tileType === TILE_TYPE.GRASS_FIELD
+                                            ? visualizeGrass.get(tile.tileVariation as GRASS_VARIATION)
+                                            : '🌊'
+                                }
                             </div>
                         )
                     })

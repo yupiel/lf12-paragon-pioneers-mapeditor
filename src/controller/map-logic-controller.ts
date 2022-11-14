@@ -130,8 +130,6 @@ const parseMapFile = (fileContent: string): MapData => {
 }
 
 export const visualizeCoast = new Map<COAST_VARIATION | undefined, string>([
-    [undefined, '⬜'],
-
     [COAST_VARIATION.L_SMALL, '╚'],
     [COAST_VARIATION.L_REVERSE_SMALL, '╔'],
     [COAST_VARIATION.J_REVERSE_SMALL, '╗'],
@@ -139,8 +137,8 @@ export const visualizeCoast = new Map<COAST_VARIATION | undefined, string>([
 
     [COAST_VARIATION.L, 'b╚'],
     [COAST_VARIATION.L_REVERSE, 'b╔'],
-    [COAST_VARIATION.J_REVERSE, 'b╗'],
-    [COAST_VARIATION.J, 'b╝'],
+    [COAST_VARIATION.J_REVERSE, '╗b'],
+    [COAST_VARIATION.J, '╝b'],
 
     [COAST_VARIATION.STRAIGHT_TOP, '═'],
     [COAST_VARIATION.STRAIGHT_RIGHT, '║'],
@@ -149,21 +147,25 @@ export const visualizeCoast = new Map<COAST_VARIATION | undefined, string>([
 ])
 
 export const visualizeMountains = new Map<MOUNTAIN_VARIATION | undefined, string>([
-    [undefined, '⬜'],
+    [MOUNTAIN_VARIATION.STRAIGHT_TOP, '⛰️'],
+    [MOUNTAIN_VARIATION.STRAIGHT_RIGHT, '⛰️\\'],
+    [MOUNTAIN_VARIATION.J_REVERSE_END, '⛰️\\e'],
+    [MOUNTAIN_VARIATION.STRAIGHT_LEFT, '/⛰️'],
+    [MOUNTAIN_VARIATION.L_REVERSE_END, 'e/⛰️'],
+    [MOUNTAIN_VARIATION.STRAIGHT_BOTTOM, '|⛰️|'],
 
-    [MOUNTAIN_VARIATION.STRAIGHT_TOP, '■'],
+    [MOUNTAIN_VARIATION.L, '╰⛰️'],
+    [MOUNTAIN_VARIATION.J, '⛰️╯'],
 
-    [MOUNTAIN_VARIATION.STRAIGHT_RIGHT, '\\'],
-    [MOUNTAIN_VARIATION.J_REVERSE_END, '\\e'],
-    [MOUNTAIN_VARIATION.STRAIGHT_LEFT, '/'],
-    [MOUNTAIN_VARIATION.L_REVERSE_END, 'e/'],
-    [MOUNTAIN_VARIATION.STRAIGHT_BOTTOM, '┬'],
+    [MOUNTAIN_VARIATION.L_REVERSE, '╭⛰️'],
+    [MOUNTAIN_VARIATION.J_REVERSE, '⛰️╮'],
+])
 
-    [MOUNTAIN_VARIATION.L, '╰'],
-    [MOUNTAIN_VARIATION.J, '╯'],
-
-    [MOUNTAIN_VARIATION.L_REVERSE, '╭'],
-    [MOUNTAIN_VARIATION.J_REVERSE, '╮'],
+export const visualizeGrass = new Map<GRASS_VARIATION, string>([
+    [GRASS_VARIATION.NO_TREES, '🌿'],
+    [GRASS_VARIATION.ONE_TREE, '🌿1'],
+    [GRASS_VARIATION.TWO_TREES, '🌿2'],
+    [GRASS_VARIATION.THREE_TREES, '🌿3'],
 ])
 
 /*
@@ -549,9 +551,6 @@ const getCoastSmallLandmassEdges = (tiles: Tile[][], rowNum: number, tileNum: nu
                 leftTile = 'C'
     }
 
-    if (JSON.stringify({ x: 5, y: 2 }) == JSON.stringify(tiles[rowNum][tileNum].position))
-        console.log(topTile + rightTile + bottomTile + leftTile)
-
     return coastSmallLandmassMapping.get(topTile + rightTile + bottomTile + leftTile) as COAST_VARIATION
 }
 
@@ -697,12 +696,132 @@ const mountainBottomEdgeMapping = new Map<string, MOUNTAIN_VARIATION>([
     ['M!!M', MOUNTAIN_VARIATION.J]
 ])
 
+const calculateMountainUpwardWindings = (mapData: MapData): MapData => {
+    for (let rowIndex = 0; rowIndex < mapData.tiles.length; rowIndex++) {
+        const row = mapData.tiles[rowIndex]
+        for (let columnnIndex = 0; columnnIndex < row.length; columnnIndex++) {
+            const tile = row[columnnIndex];
+
+            if (tile.tileVariation !== MOUNTAIN_VARIATION.L && tile.tileVariation !== MOUNTAIN_VARIATION.J) continue
+
+            mapData.tiles = crawlMountainColumn(mapData.tiles, rowIndex, columnnIndex)
+        }
+    }
+    return mapData
+}
+const crawlMountainColumn = (tiles: Tile[][], rowNum: number, tileNum: number): Tile[][] => {
+    const mountainColumnTiles = []
+
+    for (let rowIndex = rowNum - 1; rowIndex >= 0; rowIndex--) {
+        const row = tiles[rowIndex]
+        if (row[tileNum].tileType === TILE_TYPE.MOUNTAIN)
+            mountainColumnTiles.push(row[tileNum])
+        else
+            break
+    }
+
+    const left = tiles[rowNum][tileNum].tileVariation === MOUNTAIN_VARIATION.L ? true : false
+
+    if (mountainColumnTiles.length > 1)
+        for (let tileIndex = 0; tileIndex < mountainColumnTiles.length - 1; tileIndex++) {
+            const tile = mountainColumnTiles[tileIndex]
+
+            tiles[tile.position.y][tile.position.x].tileVariation = left ? MOUNTAIN_VARIATION.STRAIGHT_LEFT : MOUNTAIN_VARIATION.STRAIGHT_RIGHT
+        }
+
+    const lastFoundMountainTile = mountainColumnTiles[mountainColumnTiles.length - 1]
+    tiles[lastFoundMountainTile.position.y][tileNum].tileVariation = getMountainTopEdges(tiles, lastFoundMountainTile.position.y, tileNum, left)
+
+    return tiles
+}
+const getMountainTopEdges = (tiles: Tile[][], rowNum: number, tileNum: number, left: boolean): MOUNTAIN_VARIATION => {
+    let topTile = '!', rightTile = '!', bottomTile = '!', leftTile = '!'
+
+    if (rowNum !== 0 && tiles[rowNum - 1][tileNum].tileType === TILE_TYPE.MOUNTAIN) {
+        topTile = 'M'
+    }
+    if (tileNum !== tiles[rowNum].length - 1 && tiles[rowNum][tileNum + 1].tileType === TILE_TYPE.MOUNTAIN) {
+        rightTile = 'M'
+    }
+    if (rowNum !== tiles.length - 1 && tiles[rowNum + 1][tileNum].tileType === TILE_TYPE.MOUNTAIN) {
+        bottomTile = 'M'
+    }
+    if (tileNum !== 0 && tiles[rowNum][tileNum - 1].tileType === TILE_TYPE.MOUNTAIN) {
+        leftTile = 'M'
+    }
+
+    const queryString = topTile + rightTile + bottomTile + leftTile
+
+    return (left ? mountainTopEdgeMappingLeft.get(queryString) : mountainTopEdgeMappingRight.get(queryString)) as MOUNTAIN_VARIATION
+}
+const mountainTopEdgeMappingLeft = new Map<string, MOUNTAIN_VARIATION>([
+    ['!MM!', MOUNTAIN_VARIATION.L_REVERSE_END],
+    ['!!MM', MOUNTAIN_VARIATION.J_REVERSE]
+])
+const mountainTopEdgeMappingRight = new Map<string, MOUNTAIN_VARIATION>([
+    ['!MM!', MOUNTAIN_VARIATION.L_REVERSE],
+    ['!!MM', MOUNTAIN_VARIATION.J_REVERSE_END]
+])
+
+const calculateMOuntainSidewardWindings = (mapData: MapData): MapData => {
+    for (let rowIndex = 0; rowIndex < mapData.tiles.length; rowIndex++) {
+        const row = mapData.tiles[rowIndex]
+        for (let columnnIndex = 0; columnnIndex < row.length; columnnIndex++) {
+            const tile = row[columnnIndex];
+
+            if (tile.tileVariation === MOUNTAIN_VARIATION.L_REVERSE_END) {
+                mapData.tiles = crawlMountainRows(mapData.tiles, rowIndex, columnnIndex, true, true)
+            }
+            else if (tile.tileVariation === MOUNTAIN_VARIATION.L_REVERSE || tile.tileVariation === MOUNTAIN_VARIATION.L) {
+                mapData.tiles = crawlMountainRows(mapData.tiles, rowIndex, columnnIndex, false, true)
+            }
+            else if (tile.tileVariation === MOUNTAIN_VARIATION.J_REVERSE_END) {
+                mapData.tiles = crawlMountainRows(mapData.tiles, rowIndex, columnnIndex, true, false)
+            }
+            else if (tile.tileVariation === MOUNTAIN_VARIATION.J_REVERSE || tile.tileVariation === MOUNTAIN_VARIATION.J) {
+                mapData.tiles = crawlMountainRows(mapData.tiles, rowIndex, columnnIndex, false, false)
+            }
+        }
+    }
+    return mapData
+}
+const crawlMountainRows = (tiles: Tile[][], rowNum: number, tileNum: number, top: boolean, right: boolean): Tile[][] => {
+    const affectedTiles: Tile[] = []
+
+    const row = tiles[rowNum]
+
+    const populateAffectedTiles = (tileIndex: number) => {
+        const tile = row[tileIndex];
+        if (tile.tileType === TILE_TYPE.MOUNTAIN && tile.tileVariation === undefined)
+            affectedTiles.push(tile)
+    }
+
+    if(right)
+        for (let tileIndex = tileNum + 1; tileIndex < row.length; tileIndex++) {
+            populateAffectedTiles(tileIndex)
+        }
+    else
+        for (let tileIndex = tileNum - 1; tileIndex >= 0; tileIndex--) {
+            populateAffectedTiles(tileIndex)
+        }
+
+    if (affectedTiles.length > 0)
+        for (let tileIndex = 0; tileIndex < affectedTiles.length; tileIndex++) {
+            const tile = affectedTiles[tileIndex]
+
+            tiles[tile.position.y][tile.position.x].tileVariation = top ? MOUNTAIN_VARIATION.STRAIGHT_TOP : MOUNTAIN_VARIATION.STRAIGHT_BOTTOM
+        }
+
+    return tiles
+}
+
+
 const getCoasts = (mapData: MapData) => calculateCoastBigLandmassEdges(calculateCoastBigLandmassEdges(calculateCoastSmallLandmassEdges(calculateCoastStraights(mapData))))
 
 export const getIslandMapping = () => {
     //return advancedCoastMapping(basicCoastMapping(parseMapFile(mapString)))
     //return basicCoastMapping(parseMapFile(mapString))
 
-    return calculateMountainBottomEdges(getCoasts(parseMapFile(mapString)))
+    return calculateMOuntainSidewardWindings(calculateMountainUpwardWindings(calculateMountainBottomEdges(getCoasts(parseMapFile(mapString)))))
     //return calculateCoastSmallLandmassEdges(calculateCoastStraights(parseMapFile(mapString)))
 }
