@@ -1,10 +1,46 @@
-import React, {ChangeEvent, useRef, useState} from "react";
+import React, {ChangeEvent, useRef, useEffect} from "react";
 import "@/scss/uploadMap.scss"
+import uploadFileIcon from "@/assets/upload_icon.svg"
 
-export const UploadMap = () => {
-    const [map, setMap] = useState<undefined>(undefined)
-    const uploadRef = useRef<HTMLInputElement>(null)
+interface UploadMapProps {
+    setMap:  (map: File) => void
+}
+
+export const UploadMap = (props: UploadMapProps) => {
     const dropRef = useRef<HTMLDivElement>(null)
+    const uploadRef = useRef<HTMLInputElement>(null)
+
+    useEffect(() => {
+        dropRef.current?.addEventListener('dragover', handleDragOver)
+        dropRef.current?.addEventListener('drop', handleDrop)
+
+        return () => {
+            dropRef.current?.removeEventListener('dragover', handleDragOver)
+            dropRef.current?.removeEventListener('drop', handleDrop)
+        }
+    }, [])
+
+    const handleDragOver = (e: DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
+    const handleDrop = (e: DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+
+        const files = [...e.dataTransfer?.files as FileList]
+        getAndCheckUploadedFile(files, (fileContent => {
+            console.log(fileContent)
+        }))
+    }
+
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.preventDefault()
+        e.stopPropagation()
+
+        uploadRef.current && uploadRef.current.click()
+    }
 
     const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
@@ -28,7 +64,7 @@ export const UploadMap = () => {
         }
 
         if (files && files.length) {
-            setMap(files[0])
+            props.setMap(files[0])
         }
     }
 
@@ -37,15 +73,23 @@ export const UploadMap = () => {
             <div className="WelcomeTitle">
                 Willkommen, Abenteurer!
             </div>
-            <div className="CallToAction">
-                Klicke hier, um deine Karte hochzuladen
-            </div>
+
             <input
                 ref={uploadRef}
                 onChange={handleFileUpload}
                 type='file'
                 style={{ display: 'none' }}
            />
+            <div className={"UploadWrapper"} onClick={(e) => handleClick(e)}>
+                <div className="CallToAction">
+                    Klicke hier, um deine Karte hochzuladen
+                </div>
+                <img
+                    aria-label='upload-icon'
+                    className='UploadIcon'
+                    src={uploadFileIcon}
+                />
+            </div>
         </div>
     )
 };

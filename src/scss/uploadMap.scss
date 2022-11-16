@@ -1,5 +1,7 @@
 .UploadMapWrapper {
-
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .WelcomeTitle{
@@ -13,4 +15,18 @@
   font-family: Helvetica, sans-serif;
   font-size: 24px;
   text-align: center;
+}
+
+.UploadIcon {
+  cursor: pointer;
+  width: 100px;
+  margin-top: 20px;
+  flex: 1 1 auto;
+}
+
+.UploadWrapper {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
