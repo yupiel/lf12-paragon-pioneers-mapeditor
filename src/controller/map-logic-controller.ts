@@ -20,7 +20,7 @@ const tileVariationInitial = new Map<string, GRASS_VARIATION>([
     ['3', GRASS_VARIATION.THREE_TREES]
 ])
 
-const parseMapFile = (fileContent: string): MapData => {
+export const parseMapFile = (fileContent: string): MapData => {
     const contentInLines = fileContent.split(/\r?\n/)
     const sanitizedLines = contentInLines.filter(item => {
         return !item.startsWith('*')
@@ -46,7 +46,7 @@ const parseMapFile = (fileContent: string): MapData => {
                 tileType: tileTypes.get(value as string)!,
                 tileVariation: tileVariationInitial.get(value as string),
                 position: { x: index as number, y: lineIndex - 2 },
-                image: undefined
+                imageUrl: undefined
             })
         }
         mapData.tiles.push(lineTiles)
