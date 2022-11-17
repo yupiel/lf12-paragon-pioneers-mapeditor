@@ -17,12 +17,19 @@ export const App = () => {
         setMap(parseMapFile(fileReader.result as string))
     }
     fileReader.readAsText(mapFile)
-}
+  }
+
+  const saveMap = () => {
+    //todo: add function to save map
+  }
 
   return (
     <div className="MapWrapper">
+      {map && <div className={"MapTitle"}>{map.name}</div>}
       {!map && <UploadMap setMap={handleMapUpload} />}
       {map && <MapView mapData={map} tileLoader={tileLoader} />}
+      {map && <div className={"DimensionsWrapper"}>Höhe: {map.dimensions.y}, Breite: {map.dimensions.x}</div>}
+      {map && <div className={"SaveButton"} onClick={() => saveMap()}>Karte speichern</div>}
     </div>
   )
 }

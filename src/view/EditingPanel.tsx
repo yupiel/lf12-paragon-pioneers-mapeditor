@@ -1,12 +1,14 @@
 import React, { MutableRefObject } from "react";
 import "@/scss/editingPanel.scss";
 import {GRASS_VARIATION, TILE_TYPE} from "@/model/tile.model"
+import {SimpleTileLoader} from "@/controller/simpleTileLoader";
 
 interface IEditingPanel {
     selectTileType: (tile: TILE_TYPE) => void;
+    tileLoader: SimpleTileLoader
 }
 
-export const EditingPanel = React.forwardRef<HTMLDivElement, IEditingPanel>(({selectTileType}, ref) => {
+export const EditingPanel = React.forwardRef<HTMLDivElement, IEditingPanel>(({selectTileType, tileLoader}, ref) => {
 
     const handleClick = (key: number) => {
         selectTileType(key)
@@ -22,7 +24,7 @@ export const EditingPanel = React.forwardRef<HTMLDivElement, IEditingPanel>(({se
             tileArray.push(
                 <div className={"EditingPanelTileImage"} onClick={() => handleClick(value)}>
                     <img
-                        src={"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAABQklEQVRoQ+2aOw7CMAxA6cRdYGVjQAiJA3AJJuAswMQlOAASQhwC7gILSEWuqCUraZ2PbaVTO7TOy4tb2Wk1mb4/AwNHZQ7kejmo8LKZPVrjfA5P9XVjpIAk8ohNQFh1RtSDUADH+7iWslhudeSIehAXAOSIeCPRQIA80UuqCTN6retzyAkcv7ORAsJU6PpQqzGSHGR12zHn/nf7eb5vPaeAUNPqm+xcM9mNwASoA4EB4xnkAiU3Yg4EDIQyk82IOZBQQNmNmAPhAokxYg6kL5A4I+ZAugKJNWIOxBdIvBFzIC4gXA9FrxBD1x1UQScexNdMAeHW7EFaKX8PiW4k9ICj5wg0k2FnKBUAxAlmRD2Ib1s/tSEcz9n7VQ+iBQDMkEbUg8DOEF6D1E5R7twgjZgFkW7C24haEClrvu84zPyv9QVdyfKSgIkaGgAAAABJRU5ErkJggg=="}/>
+                        src={tileLoader.getSpriteForTile(value)}/>
                 </div>
             )
         }
@@ -31,7 +33,7 @@ export const EditingPanel = React.forwardRef<HTMLDivElement, IEditingPanel>(({se
             tileArray.push(
                 <div className={"EditingPanelTileImage"} onClick={() => handleClick(value)}>
                     <img
-                        src={"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAABQklEQVRoQ+2aOw7CMAxA6cRdYGVjQAiJA3AJJuAswMQlOAASQhwC7gILSEWuqCUraZ2PbaVTO7TOy4tb2Wk1mb4/AwNHZQ7kejmo8LKZPVrjfA5P9XVjpIAk8ohNQFh1RtSDUADH+7iWslhudeSIehAXAOSIeCPRQIA80UuqCTN6retzyAkcv7ORAsJU6PpQqzGSHGR12zHn/nf7eb5vPaeAUNPqm+xcM9mNwASoA4EB4xnkAiU3Yg4EDIQyk82IOZBQQNmNmAPhAokxYg6kL5A4I+ZAugKJNWIOxBdIvBFzIC4gXA9FrxBD1x1UQScexNdMAeHW7EFaKX8PiW4k9ICj5wg0k2FnKBUAxAlmRD2Ib1s/tSEcz9n7VQ+iBQDMkEbUg8DOEF6D1E5R7twgjZgFkW7C24haEClrvu84zPyv9QVdyfKSgIkaGgAAAABJRU5ErkJggg=="}/>
+                        src={tileLoader.getSpriteForTile(value)}/>
                 </div>
             )
         }
