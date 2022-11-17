@@ -51,10 +51,9 @@ export class SimpleTileLoader implements ITileLoader {
                 this.tileHeight,
                 0,
                 0,
-                this.tileWidth,
-                this.tileHeight);
+                50,//this.tileWidth,
+                50);//this.tileHeight);
 
-            //return context.getImageData(0, 0, canvas.width, canvas.height);
             return canvas.toDataURL()
         }
         return undefined;
