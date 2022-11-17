@@ -104,13 +104,14 @@ const mockData: MapData = {
 }
 
 export const  App = () =>  {
-    const [map, setMap] = useState<MapData | undefined>(mockData)
+    const [map, setMap] = useState<MapData | undefined>(undefined)
 
     const setMapUpload = (mapFile: File) => {
+        setMap(mockData)
         //todo import parserDingeskirchen
-        handleMapUpload(mapFile, (parsedMap: MapData) => {
-            setMap(parsedMap)
-        })
+        //handleMapUpload(mapFile, (parsedMap: MapData) => {
+
+        //})
     }
   return (
       <div className="MapWrapper">
