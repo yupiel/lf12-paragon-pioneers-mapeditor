@@ -1,81 +1,7 @@
 import mapString from '@/Insel0231.txt?raw'
-
-export interface Tile {
-    tileType: TILE_TYPE,
-    tileVariation: COAST_VARIATION | MOUNTAIN_VARIATION | GRASS_VARIATION | undefined,
-    position: Vector2,
-    image: ImageData | undefined
-}
-
-interface Vector2 {
-    x: number,
-    y: number
-}
-
-export enum TILE_TYPE {
-    WATER,
-    COAST,
-    MOUNTAIN,
-    GRASS_FIELD,
-    FIELD_ONE_TREE,
-    FIELD_TWO_TREES,
-    FIELD_THREE_TREES
-}
-
-export enum COAST_VARIATION {
-    //small landmass
-    L_SMALL = 100,
-    L_REVERSE_SMALL,
-    J_REVERSE_SMALL,
-    J_SMALL,
-
-    //big landmass
-    L,
-    L_REVERSE,
-    J_REVERSE,
-    J,
-
-    STRAIGHT_TOP,
-    STRAIGHT_RIGHT,
-    STRAIGHT_BOTTOM,
-    STRAIGHT_LEFT,
-}
-
-export enum MOUNTAIN_VARIATION {
-    FLAT_END = 200,
-
-    L,
-    L_REVERSE,
-    J_REVERSE,
-    J,
-
-    STRAIGHT_TOP,
-    STRAIGHT_RIGHT,
-    STRAIGHT_BOTTOM,
-    STRAIGHT_LEFT,
-
-    L_REVERSE_END,
-    J_REVERSE_END,
-}
-
-export enum GRASS_VARIATION {
-    NO_TREES = 300,
-    ONE_TREE,
-    TWO_TREES,
-    THREE_TREES
-}
-
-//////////////////////////////////////////////
-export interface MapData {
-    name: string
-    dimensions: Dimensions
-    tiles: Array<Array<Tile>>
-}
-
-export interface Dimensions {
-    x: number
-    y: number
-}
+import { Vector2 } from '@/model/vector-two.model'
+import { Tile, TILE_TYPE, COAST_VARIATION, MOUNTAIN_VARIATION, GRASS_VARIATION } from '@/model/tile.model'
+import { MapData } from '@/model/map.model'
 
 const tileTypes = new Map<string, TILE_TYPE>([
     ['W', TILE_TYPE.WATER],
@@ -168,298 +94,21 @@ export const visualizeGrass = new Map<GRASS_VARIATION, string>([
     [GRASS_VARIATION.THREE_TREES, '🌿3'],
 ])
 
-/*
-const matchTilePatternReducer = (
-    previousValue: ((COAST_VARIATION | TILE_TYPE[])[] | (MOUNTAIN_VARIATION | TILE_TYPE[])[])[],
-    currentValue: ((COAST_VARIATION | TILE_TYPE[][])[] | (MOUNTAIN_VARIATION | TILE_TYPE[][])[]),
-    currentIndex: number,
-    array: ((COAST_VARIATION | TILE_TYPE[][])[] | (MOUNTAIN_VARIATION | TILE_TYPE[][])[])[]
-): ((COAST_VARIATION | TILE_TYPE[])[] | (MOUNTAIN_VARIATION | TILE_TYPE[])[])[] => {
-    return [
-        ...previousValue,
-        ...[...(currentValue[0] as TILE_TYPE[][]).map((key: TILE_TYPE[]) => [key, currentValue[1]])]
-    ] as ((COAST_VARIATION | TILE_TYPE[])[] | (MOUNTAIN_VARIATION | TILE_TYPE[])[])[]
-}
-
-const matchTilePatternMapping = new Map<(TILE_TYPE[] | undefined)[], COAST_VARIATION | MOUNTAIN_VARIATION>(
-    //@ts-ignore
-    [
-        //Small landmass coast matchers
-        [
-            [
-                [TILE_TYPE.COAST, TILE_TYPE.COAST, TILE_TYPE.WATER, TILE_TYPE.WATER],
-            ],
-            COAST_VARIATION.L_SMALL
-        ],
-        [
-            [
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_TOP, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_LEFT, undefined],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.J, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_LEFT, undefined],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_TOP, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_LEFT, undefined],
-            ],
-            COAST_VARIATION.L_REVERSE_SMALL
-        ],
-        [
-            [
-                [undefined, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_RIGHT, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_TOP],
-                [undefined, undefined, TILE_TYPE.COAST + COAST_VARIATION.J, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_TOP],
-                [undefined, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_RIGHT, TILE_TYPE.COAST + COAST_VARIATION.J],
-            ],
-            COAST_VARIATION.J_REVERSE_SMALL
-        ],
-        [
-            [
-                [TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_RIGHT, undefined, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_BOTTOM],
-                [TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE, undefined, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_BOTTOM],
-                [TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_RIGHT, undefined, undefined, TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE],
-            ],
-            COAST_VARIATION.J_SMALL
-        ],
-        [
-            [
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_TOP, undefined, TILE_TYPE.COAST + COAST_VARIATION.L],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_TOP, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_TOP],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_TOP, undefined, TILE_TYPE.COAST + COAST_VARIATION.J_REVERSE_SMALL],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.J, undefined, TILE_TYPE.COAST + COAST_VARIATION.L],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.J, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_TOP],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.J, undefined, TILE_TYPE.COAST + COAST_VARIATION.J_REVERSE_SMALL],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE_SMALL, undefined, TILE_TYPE.COAST + COAST_VARIATION.L],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE_SMALL, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_TOP],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE_SMALL, undefined, TILE_TYPE.COAST + COAST_VARIATION.J_REVERSE_SMALL],
-
-            ],
-            COAST_VARIATION.STRAIGHT_TOP
-        ],
-        [
-            [
-                [TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_RIGHT, undefined, TILE_TYPE.COAST + COAST_VARIATION.L, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_RIGHT, undefined, TILE_TYPE.COAST + COAST_VARIATION.J_SMALL, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_RIGHT, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_RIGHT, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.J_REVERSE_SMALL, undefined, TILE_TYPE.COAST + COAST_VARIATION.L, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.J_REVERSE_SMALL, undefined, TILE_TYPE.COAST + COAST_VARIATION.J_SMALL, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.J_REVERSE_SMALL, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_RIGHT, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE, undefined, TILE_TYPE.COAST + COAST_VARIATION.L, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE, undefined, TILE_TYPE.COAST + COAST_VARIATION.J_SMALL, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_RIGHT, undefined],
-            ],
-            COAST_VARIATION.STRAIGHT_RIGHT
-        ],
-        [
-            [
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_BOTTOM, undefined, TILE_TYPE.COAST + COAST_VARIATION.L_SMALL],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_BOTTOM, undefined, TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_BOTTOM, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_BOTTOM],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.J_REVERSE, undefined, TILE_TYPE.COAST + COAST_VARIATION.J_SMALL],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.J_REVERSE, undefined, TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.J_REVERSE, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_BOTTOM],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.J_SMALL, undefined, TILE_TYPE.COAST + COAST_VARIATION.J_SMALL],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.J_SMALL, undefined, TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE],
-                [undefined, TILE_TYPE.COAST + COAST_VARIATION.J_SMALL, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_BOTTOM],
-            ],
-            COAST_VARIATION.STRAIGHT_BOTTOM
-        ],
-        [
-            [
-                [TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_LEFT, undefined, TILE_TYPE.COAST + COAST_VARIATION.J, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_LEFT, undefined, TILE_TYPE.COAST + COAST_VARIATION.L_SMALL, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_LEFT, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_LEFT, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.J_REVERSE, undefined, TILE_TYPE.COAST + COAST_VARIATION.J, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.J_REVERSE, undefined, TILE_TYPE.COAST + COAST_VARIATION.L_SMALL, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.J_REVERSE, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_LEFT, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE_SMALL, undefined, TILE_TYPE.COAST + COAST_VARIATION.J, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE_SMALL, undefined, TILE_TYPE.COAST + COAST_VARIATION.L_SMALL, undefined],
-                [TILE_TYPE.COAST + COAST_VARIATION.L_REVERSE_SMALL, undefined, TILE_TYPE.COAST + COAST_VARIATION.STRAIGHT_LEFT, undefined],
-            ],
-            COAST_VARIATION.STRAIGHT_LEFT
-        ],
-
-        //Big landmass coast matchers
-        [
-            [
-                [TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN],
-                [TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN],
-            ],
-            MOUNTAIN_VARIATION.FLAT_END
-        ],
-        [
-            [
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD],
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST],
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST],
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD],
-            ],
-            MOUNTAIN_VARIATION.LEFT
-        ],
-        [
-            [
-                [TILE_TYPE.GRASS_FIELD, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN],
-                [TILE_TYPE.GRASS_FIELD, TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN],
-                [TILE_TYPE.COAST, TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN],
-                [TILE_TYPE.COAST, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN],
-            ],
-            MOUNTAIN_VARIATION.LEFT_END
-        ],
-        [
-            [
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD],
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST],
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST],
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD],
-            ],
-            MOUNTAIN_VARIATION.RIGHT
-        ],
-        [
-            [
-                [TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD],
-                [TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST],
-                [TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST],
-                [TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD],
-            ],
-            MOUNTAIN_VARIATION.RIGHT_END
-        ],
-        [
-            [
-                [TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN],
-                [TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN],
-            ],
-            MOUNTAIN_VARIATION.UPWARD
-        ],
-        [
-            [
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD, TILE_TYPE.GRASS_FIELD],
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD, TILE_TYPE.COAST],
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST, TILE_TYPE.COAST],
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST, TILE_TYPE.GRASS_FIELD],
-            ],
-            MOUNTAIN_VARIATION.OUTWARD_RIGHT
-        ],
-        [
-            [
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN],
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD, TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN],
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST, TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN],
-                [TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN],
-            ],
-            MOUNTAIN_VARIATION.OUTWARD_LEFT
-        ],
-        [
-            [
-                [TILE_TYPE.GRASS_FIELD, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN],
-                [TILE_TYPE.GRASS_FIELD, TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN],
-                [TILE_TYPE.COAST, TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN],
-                [TILE_TYPE.COAST, TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN],
-            ],
-            MOUNTAIN_VARIATION.INWARD_RIGHT
-        ],
-        [
-            [
-                [TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD],
-                [TILE_TYPE.GRASS_FIELD, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST],
-                [TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN, TILE_TYPE.COAST],
-                [TILE_TYPE.COAST, TILE_TYPE.MOUNTAIN, TILE_TYPE.MOUNTAIN, TILE_TYPE.GRASS_FIELD],
-            ],
-            MOUNTAIN_VARIATION.INWARD_LEFT
-        ],
-        //@ts-ignore
-    ].reduce(matchTilePatternReducer, [])
-)
-
-const matchTilePattern = (types: TILE_TYPE[]): COAST_VARIATION | MOUNTAIN_VARIATION | undefined => {
-    for (let entry of [...matchTilePatternMapping.entries()]) {
-        const intersection = (entry[0] as (TILE_TYPE | undefined)[]).filter(tileType => {
-            if (tileType)
-                return types.includes(tileType)
-        })
-        if (intersection.length >= 2) {
-            console.log(COAST_VARIATION[entry[1]])
-            return entry[1]
-        }
-    }
-    return undefined
-}
-
-const baiscMountainVariations = new Map<string, MOUNTAIN_VARIATION | undefined>([
-    ['!!!!', undefined],
-    ['MMMM', undefined],
-
-    ['!MMM', MOUNTAIN_VARIATION.FLAT],
-
-    ['M!MM', MOUNTAIN_VARIATION.LEFT],
-    ['!!MM', MOUNTAIN_VARIATION.LEFT_END],
-    ['MMM!', MOUNTAIN_VARIATION.RIGHT],
-    ['!MM!', MOUNTAIN_VARIATION.RIGHT_END],
-    ['MM!M', MOUNTAIN_VARIATION.UPWARD],
-
-    ['MM!!', MOUNTAIN_VARIATION.OUTWARD_RIGHT],
-    ['M!!M', MOUNTAIN_VARIATION.OUTWARD_LEFT],
-])
-
-const tileMatcher = (tiles: Tile[][], currentTilePosition: Vector2): COAST_VARIATION | MOUNTAIN_VARIATION | GRASS_VARIATION | undefined => {
-    const currentTile = tiles[currentTilePosition.y][currentTilePosition.x]
-    let topTile, rightTile, leftTile, bottomTile
-
-    if (currentTilePosition.y !== 0) topTile = tiles[currentTilePosition.y - 1][currentTilePosition.x]
-    if (currentTilePosition.x !== tiles[currentTilePosition.y].length - 1) rightTile = tiles[currentTilePosition.y][currentTilePosition.x + 1]
-    if (currentTilePosition.y !== tiles.length - 1) bottomTile = tiles[currentTilePosition.y + 1][currentTilePosition.x]
-    if (currentTilePosition.x !== 0) leftTile = tiles[currentTilePosition.y][currentTilePosition.x - 1]
-
-    const queryTiles = [topTile ? topTile.tileType : -1, rightTile ? rightTile.tileType : -1, bottomTile ? bottomTile.tileType : -1, leftTile ? leftTile.tileType : -1]
-    console.log(queryTiles)
-
-    let variationResult = matchTilePattern(queryTiles)
-    if (!variationResult) {
-        const advancedQuery = [
-            topTile ? topTile.tileType + (topTile.tileVariation ? topTile.tileVariation : 0) : -1,
-            rightTile ? rightTile.tileType + (rightTile.tileVariation ? rightTile.tileVariation : 0) : -1,
-            bottomTile ? bottomTile.tileType + (bottomTile.tileVariation ? bottomTile.tileVariation : 0) : -1,
-            leftTile ? leftTile.tileType + (leftTile.tileVariation ? leftTile.tileVariation : 0) : -1
-        ]
-        console.log(advancedQuery)
-        variationResult = matchTilePattern(advancedQuery)
-    }
-
-    return variationResult
-}
-
-const calculateTiles = (mapData: MapData) => {
-    let tileUnassigned = true;
-    console.log("CALCULATING")
-
-    //while (tileUnassigned) {
-    tileUnassigned = false
-    for (let rowIndex = 0; rowIndex < mapData.tiles.length; rowIndex++) {
-        const row = mapData.tiles[rowIndex]
-        for (let columnnIndex = 0; columnnIndex < row.length; columnnIndex++) {
-            const tile = row[columnnIndex];
-            if (tile.tileType !== TILE_TYPE.COAST || tile.tileVariation !== undefined) continue
-
-            let tileVariation = tileMatcher(mapData.tiles, tile.position)
-            console.log(tileVariation)
-            if (!tileVariation) tileUnassigned = true
-
-            mapData.tiles[rowIndex][columnnIndex].tileVariation = tileVariation
-        }
-    }
-    //}
+const runInTileArray = (mapData: MapData,
+    func: (rowIndex: number, columnIndex: number) => void)
+    : MapData => {
+    for (let rowIndex = 0; rowIndex < mapData.tiles.length; rowIndex++)
+        for (let columnnIndex = 0; columnnIndex < mapData.tiles[rowIndex].length; columnnIndex++)
+            func(rowIndex, columnnIndex)
 
     return mapData
 }
-*/
 
-export const calculateCoastStraights = (mapData: MapData): MapData => {
-    for (let rowIndex = 0; rowIndex < mapData.tiles.length; rowIndex++) {
-        const row = mapData.tiles[rowIndex]
-        for (let columnnIndex = 0; columnnIndex < row.length; columnnIndex++) {
-            const tile = row[columnnIndex];
+const calculateCoastStraights = (mapData: MapData): MapData => runInTileArray(mapData, (rowIndex, columnIndex) => {
+    if (mapData.tiles[rowIndex][columnIndex].tileType !== TILE_TYPE.COAST) return
 
-            if (tile.tileType !== TILE_TYPE.COAST) continue
-
-            mapData.tiles[rowIndex][columnnIndex].tileVariation = getCoastStraights(mapData.tiles, rowIndex, columnnIndex)
-        }
-    }
-
-    return mapData
-}
+    mapData.tiles[rowIndex][columnIndex].tileVariation = getCoastStraights(mapData.tiles, rowIndex, columnIndex)
+})
 
 const getCoastStraights = (tiles: Tile[][], rowNum: number, tileNum: number): COAST_VARIATION => {
     let topTile = '!', rightTile = '!', bottomTile = '!', leftTile = '!'
@@ -491,6 +140,7 @@ const getCoastStraights = (tiles: Tile[][], rowNum: number, tileNum: number): CO
 
     return coastStraightsMapping.get(topTile + rightTile + bottomTile + leftTile) as COAST_VARIATION
 }
+
 
 const coastStraightsMapping = new Map<string, COAST_VARIATION>([
     ['WC!C', COAST_VARIATION.STRAIGHT_TOP],
@@ -796,7 +446,7 @@ const crawlMountainRows = (tiles: Tile[][], rowNum: number, tileNum: number, top
             affectedTiles.push(tile)
     }
 
-    if(right)
+    if (right)
         for (let tileIndex = tileNum + 1; tileIndex < row.length; tileIndex++) {
             populateAffectedTiles(tileIndex)
         }

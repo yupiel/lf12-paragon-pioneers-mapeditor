@@ -10,5 +10,7 @@ export interface ITileLoader {
     tileTypePositionMap: Map<number, Vector2>
 
     tilePosToImgPos(pos: Vector2): Vector2
-    getTile(tileType: number): ImageData | undefined
+    //getTile(tileType: number): string | ImageData | undefined
+    initialize(callback: (loaded: boolean) => void): void
+    getSpriteForTile(tileType: number): string | undefined
 }

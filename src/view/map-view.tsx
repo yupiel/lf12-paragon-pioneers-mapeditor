@@ -1,10 +1,19 @@
-import { MapData, Tile, visualizeCoast, visualizeMountains, COAST_VARIATION, MOUNTAIN_VARIATION, TILE_TYPE, visualizeGrass, GRASS_VARIATION } from "@/controller/map-logic-controller"
-import { useState } from "react"
+import { visualizeCoast, visualizeMountains, visualizeGrass } from "@/controller/map-logic-controller"
+import { Tile, TILE_TYPE, COAST_VARIATION, MOUNTAIN_VARIATION, GRASS_VARIATION } from '@/model/tile.model'
+import { MapData } from '@/model/map.model'
+import { createElement, useEffect, useState } from "react"
 
 import './map-view.scss'
+import { ITileLoader } from "@/model/ITileLoader.model"
 
 export const DisplayMap = (props: DisplayMapProps) => {
     const [mapData, setMapData] = useState<MapData>(props.map)
+    const [loaded, setLoaded] = useState<boolean>(false)
+
+    useEffect(() => {
+        props.tileLoader.initialize(setLoaded)
+    }, [])
+
 
     console.log(mapData)
     return (
@@ -15,19 +24,13 @@ export const DisplayMap = (props: DisplayMapProps) => {
             }
         }>
             {
+                loaded &&
                 mapData &&
                 mapData.tiles.map((tileRow: Tile[]) => {
                     return tileRow.map((tile: Tile) => {
                         return (
-                            <div key={`${tile.tileType}_${(Date.now())}_${Math.random() * 1000}`}>
-                                {tile.tileType === TILE_TYPE.COAST
-                                    ? visualizeCoast.get(tile.tileVariation as COAST_VARIATION)
-                                    : tile.tileType === TILE_TYPE.MOUNTAIN
-                                        ? visualizeMountains.get(tile.tileVariation as MOUNTAIN_VARIATION)
-                                        : tile.tileType === TILE_TYPE.GRASS_FIELD
-                                            ? visualizeGrass.get(tile.tileVariation as GRASS_VARIATION)
-                                            : '🌊'
-                                }
+                            <div>
+                                <img src={props.tileLoader.getSpriteForTile(tile.tileType)} />
                             </div>
                         )
                     })
@@ -38,5 +41,6 @@ export const DisplayMap = (props: DisplayMapProps) => {
 }
 
 interface DisplayMapProps {
-    map: MapData
+    map: MapData,
+    tileLoader: ITileLoader
 }

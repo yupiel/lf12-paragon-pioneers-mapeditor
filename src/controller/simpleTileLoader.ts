@@ -1,9 +1,9 @@
-import tileSheet from '@/assets/simple_tiles.png'
+import tileSheetUrl from '@/assets/simple_tiles.png?url'
 import { ITileLoader } from '@/model/ITileLoader.model';
 import { TILE_TYPE } from '@/model/tile.model'
 import { Vector2 } from '@/model/vector-two.model';
 
-class SimpleTileLoader implements ITileLoader{
+export class SimpleTileLoader implements ITileLoader {
 
     tileSheet: HTMLImageElement;
     tileSheetWidth: number;
@@ -11,20 +11,32 @@ class SimpleTileLoader implements ITileLoader{
     tileWidth: number = 128;
     tileHeight: number = 128;
     tileTypePositionMap: Map<number, Vector2> = new Map<number, Vector2>([
-        [TILE_TYPE.WATER, {x: 0, y: 0}],
-        [TILE_TYPE.MOUNTAIN, {x: 1, y: 0}],
-        [TILE_TYPE.COAST, {x: 2, y: 0}],
-        [TILE_TYPE.GRASS_FIELD, {x: 0, y: 1}],
+        [TILE_TYPE.WATER, { x: 0, y: 0 }],
+        [TILE_TYPE.MOUNTAIN, { x: 1, y: 0 }],
+        [TILE_TYPE.COAST, { x: 2, y: 0 }],
+        [TILE_TYPE.GRASS_FIELD, { x: 0, y: 1 }],
     ]);
+
+    private typeTileMapping = new Map<number, string>()
 
     constructor() {
         this.tileSheet = new Image();
-        this.tileSheet.src = tileSheet;
+        this.tileSheet.src = new URL(tileSheetUrl, import.meta.url).href
         this.tileSheetWidth = this.tileSheet.width;
         this.tileSheetHeight = this.tileSheet.height;
     }
 
-    getTile(tileType: number): ImageData | undefined {
+    initialize(callback: (loaded: boolean) => void) {
+        this.tileSheet.onload = () => {
+            for (let tileType of Object.keys(TILE_TYPE).filter((v) => !isNaN(Number(v)))) {
+                this.typeTileMapping.set(Number(tileType), this.getTile(Number(tileType)) as string)
+            }
+
+            callback(true)
+        }
+    }
+
+    private getTile(tileType: number): string | ImageData | undefined {
         let canvas = document.createElement('canvas');
         canvas.width = 128;
         canvas.height = 128;
@@ -41,16 +53,22 @@ class SimpleTileLoader implements ITileLoader{
                 0,
                 this.tileWidth,
                 this.tileHeight);
-            return context.getImageData(0, 0, canvas.width, canvas.height);
+
+            //return context.getImageData(0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL()
         }
         return undefined;
+    }
+
+    getSpriteForTile(tileType: number): string | undefined {
+        return this.typeTileMapping.get(tileType)
     }
 
     tilePosToImgPos(pos: Vector2): Vector2 {
         let xi: number = pos.x * this.tileWidth;
         let yi: number = pos.y * this.tileHeight;
 
-        return {x: xi, y: yi};
+        return { x: xi, y: yi };
     }
 
 }
