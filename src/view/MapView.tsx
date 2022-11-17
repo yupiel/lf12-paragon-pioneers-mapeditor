@@ -9,18 +9,13 @@ export const MapView: React.FC<MapViewProps> = (props) => {
     const [loaded, setLoaded] = useState<boolean>(false)
     const [selectedTile, setSelectedTile] = useState<Tile | null>(null)
     const [selectedElement, setSelectedElement] = useState<HTMLDivElement | null>(null)
+    const [selectedTileType, setSelectedTileType] = useState<number | null>(null)
+
+    const editingRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
         props.tileLoader.initialize(setLoaded)
     }, [])
-
-    const onClickTile = (tile: Tile, event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (selectedTile && tile.position.x == selectedTile.position.x && tile.position.y == selectedTile.position.y) {
-            setSelectedTile(null)
-            event.currentTarget.style.boxShadow = "";
-    const [selectedTileType, setSelectedTileType] = useState<number | null>(null)
-
-    const editingRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
         //todo: Funktion zum Ändern der Karte
@@ -74,7 +69,7 @@ export const MapView: React.FC<MapViewProps> = (props) => {
                 props.mapData.tiles.map((tileRow: Tile[]) => {
                     return tileRow.map((tile: Tile) => {
                         return (
-                            <div key={tile.position.x + tile.position.y} onClick={(event) => onClickTile(tile, event)} className="TileWrapper" ref={tileRef}>
+                            <div key={tile.position.x + tile.position.y} onClick={(event) => onClickTile(tile, event)} className="TileWrapper">
                                 <img src={props.tileLoader.getSpriteForTile(tile.tileType)} />
                             </div>
                         )

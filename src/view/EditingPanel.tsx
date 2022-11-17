@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MutableRefObject } from "react";
 import "@/scss/editingPanel.scss";
 import {GRASS_VARIATION, TILE_TYPE} from "@/model/tile.model"
 
@@ -10,8 +10,8 @@ export const EditingPanel = React.forwardRef<HTMLDivElement, IEditingPanel>(({se
 
     const handleClick = (key: number) => {
         selectTileType(key)
-        if (ref?.current) {
-            ref.current.style.left="-200px";
+        if ((ref as MutableRefObject<HTMLDivElement>).current) {
+            (ref as MutableRefObject<HTMLDivElement>).current.style.left="-200px";
         }
         console.log(key)
     }
