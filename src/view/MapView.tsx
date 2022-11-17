@@ -8,7 +8,7 @@ import { ITileLoader } from "@/model/ITileLoader.model";
 export const MapView: React.FC<MapViewProps> = (props) => {
     const [loaded, setLoaded] = useState<boolean>(false)
     const [selectedTile, setSelectedTile] = useState<Tile | null>(null)
-    const tileRef = useRef(null);
+    const [selectedElement, setSelectedElement] = useState<HTMLDivElement | null>(null)
 
     useEffect(() => {
         props.tileLoader.initialize(setLoaded)
@@ -18,11 +18,48 @@ export const MapView: React.FC<MapViewProps> = (props) => {
         if (selectedTile && tile.position.x == selectedTile.position.x && tile.position.y == selectedTile.position.y) {
             setSelectedTile(null)
             event.currentTarget.style.boxShadow = "";
+    const [selectedTileType, setSelectedTileType] = useState<number | null>(null)
+
+    const editingRef = useRef<HTMLDivElement | null>(null)
+
+    useEffect(() => {
+        //todo: Funktion zum Ändern der Karte
+        console.log(selectedTileType + " wurde ausgewählt.")
+        setSelectedTile(null)
+
+        if (selectedElement!!) {
+            selectedElement.style.boxShadow = ""
+        }
+
+        setSelectedElement(null)
+
+        if (editingRef.current) {
+            editingRef.current.style.left = "-100px"
+        }
+
+        console.log(selectedTileType)
+    }, [selectedTileType])
+
+    const onClickTile = (tile: Tile, event: React.MouseEvent<HTMLDivElement>) => {
+        // todo: add logic for Map Editing here
+        if (selectedTile && tile.position.x == selectedTile.position.x && tile.position.y == selectedTile.position.y) {
+            setSelectedTile(null)
+            event.currentTarget.style.boxShadow ="";
+            setSelectedElement(null)
+            if (editingRef.current) {
+                editingRef.current.style.left = "-200px"
+            }
         } else {
             setSelectedTile(tile)
+            if (selectedElement!!) {
+                selectedElement.style.boxShadow = ""
+            }
             event.currentTarget.style.boxShadow = "inset 0 0 0 2px red";
+            setSelectedElement(event.currentTarget)
+            if (editingRef.current) {
+                editingRef.current.style.left = "5px"
+            }
         }
-        console.log("Tile clicked!")
     }
 
     return (
@@ -44,9 +81,8 @@ export const MapView: React.FC<MapViewProps> = (props) => {
                     })
                 })
             }
-            {selectedTile && (
-                <EditingPanel />
-            )}
+
+            <EditingPanel selectTileType={setSelectedTileType} ref={editingRef} />
         </div>
     )
 }
