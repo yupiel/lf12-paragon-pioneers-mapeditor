@@ -1,7 +1,57 @@
-import mapString from '@/Insel0231.txt?raw'
 import { Tile, TILE_TYPE, COAST_VARIATION, MOUNTAIN_VARIATION, GRASS_VARIATION } from '@/model/tile.model'
 import { MapData } from '@/model/map.model'
-import { parseMapFile } from './mapFileUtils'
+
+const tileTypes = new Map<string, TILE_TYPE>([
+    ['W', TILE_TYPE.WATER],
+    ['K', TILE_TYPE.COAST],
+    ['G', TILE_TYPE.MOUNTAIN],
+    ['0', TILE_TYPE.GRASS_FIELD],
+    ['1', TILE_TYPE.GRASS_FIELD],
+    ['2', TILE_TYPE.GRASS_FIELD],
+    ['3', TILE_TYPE.GRASS_FIELD]
+])
+
+const tileVariationInitial = new Map<string, GRASS_VARIATION>([
+    ['0', GRASS_VARIATION.NO_TREES],
+    ['1', GRASS_VARIATION.ONE_TREE],
+    ['2', GRASS_VARIATION.TWO_TREES],
+    ['3', GRASS_VARIATION.THREE_TREES]
+])
+
+const parseMapFile = (fileContent: string): MapData => {
+    const contentInLines = fileContent.split(/\r?\n/)
+    const sanitizedLines = contentInLines.filter(item => {
+        return !item.startsWith('*')
+    })
+
+    const dimensionsLine = sanitizedLines[1].split(' ')
+
+    const mapData: MapData = {
+        name: sanitizedLines[0],
+        dimensions: {
+            x: parseInt(dimensionsLine[1]),
+            y: parseInt(dimensionsLine[dimensionsLine.length - 1])
+        },
+        tiles: []
+    }
+
+    for (let lineIndex = 2; lineIndex < sanitizedLines.length; lineIndex++) {
+        const line = sanitizedLines[lineIndex];
+        const lineTiles: Tile[] = []
+
+        for (const [index, value] of [...line].map((value, index) => [index, value])) {
+            lineTiles.push({
+                tileType: tileTypes.get(value as string)!,
+                tileVariation: tileVariationInitial.get(value as string),
+                position: { x: index as number, y: lineIndex - 2 },
+                imageUrl: undefined
+            })
+        }
+        mapData.tiles.push(lineTiles)
+    }
+
+    return mapData
+}
 
 export const visualizeCoast = new Map<COAST_VARIATION | undefined, string>([
     [COAST_VARIATION.L_SMALL, '╚'],
@@ -416,7 +466,7 @@ const crawlMountainRows = (tiles: Tile[][], rowNum: number, tileNum: number, top
 
 const getCoasts = (mapData: MapData) => calculateCoastBigLandmassEdges(calculateCoastBigLandmassEdges(calculateCoastSmallLandmassEdges(calculateCoastStraights(mapData))))
 
-export const getIslandMapping = () => {
+export const getIslandMapping = (mapString: string): MapData => {
     //return advancedCoastMapping(basicCoastMapping(parseMapFile(mapString)))
     //return basicCoastMapping(parseMapFile(mapString))
 

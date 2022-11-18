@@ -34,9 +34,7 @@ export enum COAST_VARIATION {
 }
 
 export enum MOUNTAIN_VARIATION {
-    FLAT_END = 200,
-
-    L,
+    L = 200,
     L_REVERSE,
     J_REVERSE,
     J,

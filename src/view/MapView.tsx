@@ -14,7 +14,7 @@ export const MapView: React.FC<MapViewProps> = (props) => {
     const editingRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
-        props.tileLoader.initialize(setLoaded)
+        props.tileLoader.waitForInitialized(setLoaded)
     }, [])
 
     useEffect(() => {
@@ -67,8 +67,8 @@ export const MapView: React.FC<MapViewProps> = (props) => {
                 props.mapData.tiles.map((tileRow: Tile[]) => {
                     return tileRow.map((tile: Tile) => {
                         return (
-                            <div key={tile.position.x + tile.position.y} onClick={(event) => onClickTile(tile, event)} className="TileWrapper">
-                                <img src={props.tileLoader.getSpriteForTile(tile.tileType)} />
+                            <div key={`${tile.position.x}-${tile.position.y}`} onClick={(event) => onClickTile(tile, event)} className="TileWrapper">
+                                <img src={props.tileLoader.getSpriteForTile(tile.tileVariation ? tile.tileVariation : tile.tileType)} />
                             </div>
                         )
                     })

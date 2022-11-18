@@ -1,4 +1,3 @@
-import {TILE_TYPE, COAST_VARIATION, MOUNTAIN_VARIATION, GRASS_VARIATION} from '@/model/tile.model'
 import { Vector2 } from '@/model/vector-two.model';
 
 export interface ITileLoader {
@@ -8,9 +7,10 @@ export interface ITileLoader {
     tileWidth: number;
     tileHeight: number;
     tileTypePositionMap: Map<number, Vector2>
+    typeTileMapping: Map<number, string>
+    initialized: boolean
 
     tilePosToImgPos(pos: Vector2): Vector2
-    //getTile(tileType: number): string | ImageData | undefined
-    initialize(callback: (loaded: boolean) => void): void
+    waitForInitialized(callback: (loaded: boolean) => void): void
     getSpriteForTile(tileType: number): string | undefined
 }
