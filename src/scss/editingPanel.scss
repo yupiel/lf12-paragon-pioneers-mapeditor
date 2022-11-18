@@ -1,0 +1,53 @@
+.EditingPanelWrapper {
+  align-items: center;
+  background-image: url("@/assets/wood-background.jpg");
+  background-size: cover;
+  box-shadow: 5px 6px 7px 2px rgba(0,0,0,0.33);
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  position: absolute;
+  overflow: scroll;
+  gap: 5px;
+  -webkit-overflow-scrolling: auto;
+  height: 500px;
+  padding: 15px 0;
+  left: -200px;
+  top: 100px;
+  width: 100px;
+  transition: all 0.55s ease-in-out;
+  animation: slideIn 2s forwards;
+  -webkit-animation: slideIn 2s forwards;
+  -moz-animation: slideIn 2s forwards;
+
+  @-webkit-keyframes slideIn {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(5px);
+    }
+  }
+  @-moz-keyframes slideIn {
+    0% {
+      transform: translateX(0px);
+    }
+    100% {
+      transform: translateX(5px);
+    }
+  }
+  @keyframes slideIn {
+    0% {
+      transform: translateX(0px);
+    }
+    100% {
+      transform: translateX(5px);
+    }
+  }
+}
+
+.EditingPanelTileImage {
+  height: 50px;
+  width: 50px;
+  cursor: pointer;
+}

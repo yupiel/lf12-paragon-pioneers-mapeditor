@@ -4,7 +4,7 @@ export interface Tile {
     tileType: TILE_TYPE,
     tileVariation: COAST_VARIATION | MOUNTAIN_VARIATION | GRASS_VARIATION | undefined,
     position: Vector2,
-    image: ImageData | undefined
+    imageUrl: string | undefined
 }
 
 export enum TILE_TYPE {
@@ -34,9 +34,7 @@ export enum COAST_VARIATION {
 }
 
 export enum MOUNTAIN_VARIATION {
-    FLAT_END = 200,
-
-    L,
+    L = 200,
     L_REVERSE,
     J_REVERSE,
     J,

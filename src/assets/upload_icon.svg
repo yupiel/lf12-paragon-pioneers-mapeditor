@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 625.02 625.02">
+    <defs>
+        <style>.cls-1,.cls-2{opacity:0.15;}.cls-1{fill:url(#linear-gradient);}.cls-2{fill:url(#linear-gradient-2);}.cls-3{fill:#2a94f4;}</style>
+        <linearGradient id="linear-gradient" x1="514.84" y1="688.64" x2="285.35" y2="291.16" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#43aced" stop-opacity="0" />
+            <stop offset="1" stop-color="#231f20" />
+        </linearGradient>
+        <linearGradient id="linear-gradient-2" x1="482.86" y1="473.25" x2="286.43" y2="133.02" xlink:href="#linear-gradient" />
+    </defs>
+    <title>Multimedia Icons</title>
+    <g id="Layer_2" data-name="Layer 2">
+        <path class="cls-1" d="M528.79,299.29,625,403.74V625H263.15L114.36,470.74l-8.49-76s-2,82.67,57.19,90.84,271.66,8.68,306.39-6.89,44.26-48.26,48.17-108.52,11.17-70.92,11.17-70.92" />
+        <path class="cls-2" d="M400.52,196.32l117.1,111.59s6,136.91-16.51,154.24-84.77,30.62-84.77,30.62l-25.53-5.11-78.3-83.92V118l88,78.36" />
+    </g>
+    <g id="Layer_1" data-name="Layer 1">
+        <path class="cls-3" d="M517.62,292.36a12.42,12.42,0,0,0-12.47,12.47v113.4a55.94,55.94,0,0,1-55.87,55.88H175.74a56,56,0,0,1-55.87-55.88V303a12.47,12.47,0,0,0-24.94,0V418.23A80.9,80.9,0,0,0,175.74,499H449.28a80.89,80.89,0,0,0,80.81-80.81V304.83a12.47,12.47,0,0,0-12.47-12.47Zm0,0" />
+        <path class="cls-3" d="M242.05,196.32l58-58v253a12.47,12.47,0,0,0,24.94,0V138.32l58,58a12.56,12.56,0,0,0,8.78,3.69,12,12,0,0,0,8.77-3.69,12.42,12.42,0,0,0,0-17.64L321.28,99.44a12.6,12.6,0,0,0-8.77-3.69,12.06,12.06,0,0,0-8.77,3.69L224.5,178.68a12.44,12.44,0,0,0,17.55,17.64Zm0,0" />
+    </g>
+</svg>
