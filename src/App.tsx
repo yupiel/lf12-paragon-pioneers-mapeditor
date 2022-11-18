@@ -1,10 +1,11 @@
-import "@/scss/app.scss"
 import { useState } from "react";
 import { UploadMap } from "@/view/UploadMap";
 import { MapView } from "@/view/MapView";
 import { MapData } from "@/model/map.model";
-import { VariationTileLoader } from "./controller/variation-tile.controller";
+import { VariationTileLoader } from "@/controller/variation-tile.controller";
 import { calculateIslandMapping, reCalculateIslandMapping } from '@/controller/map-logic.controller'
+import { saveMapFile } from '@/controller/file.controller'
+import "@/scss/app.scss"
 
 const varTileLoader = new VariationTileLoader()
 
