@@ -76,7 +76,7 @@ export const MapView: React.FC<MapViewProps> = (props) => {
                     })
                 })
             }
-
+            
             <EditingPanel selectTileType={setSelectedTileType} ref={editingRef} tileLoader={props.tileLoader} />
         </div>
     )

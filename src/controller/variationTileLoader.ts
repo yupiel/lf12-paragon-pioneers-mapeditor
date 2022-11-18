@@ -82,11 +82,11 @@ export class VariationTileLoader implements ITileLoader {
     }
 
     async waitForInitialized(callback: (loaded: boolean) => void) {
-        while (!this.initialized) {
-            console.log('waiting for tile loader to initialize')
-            await null
+        const poll = () => {
+            if(this.initialized) callback(true)
+            else setTimeout(() => poll(), 200)
         }
-        callback(this.initialized)
+        poll()
     }
 
     private getTile(tileType: number): string | ImageData | undefined {
