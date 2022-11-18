@@ -1,5 +1,3 @@
-import mapString from '@/Insel0231.txt?raw'
-import { Vector2 } from '@/model/vector-two.model'
 import { Tile, TILE_TYPE, COAST_VARIATION, MOUNTAIN_VARIATION, GRASS_VARIATION } from '@/model/tile.model'
 import { MapData } from '@/model/map.model'
 
@@ -20,7 +18,7 @@ const tileVariationInitial = new Map<string, GRASS_VARIATION>([
     ['3', GRASS_VARIATION.THREE_TREES]
 ])
 
-export const parseMapFile = (fileContent: string): MapData => {
+const parseMapFile = (fileContent: string): MapData => {
     const contentInLines = fileContent.split(/\r?\n/)
     const sanitizedLines = contentInLines.filter(item => {
         return !item.startsWith('*')
@@ -468,7 +466,7 @@ const crawlMountainRows = (tiles: Tile[][], rowNum: number, tileNum: number, top
 
 const getCoasts = (mapData: MapData) => calculateCoastBigLandmassEdges(calculateCoastBigLandmassEdges(calculateCoastSmallLandmassEdges(calculateCoastStraights(mapData))))
 
-export const getIslandMapping = () => {
+export const getIslandMapping = (mapString: string): MapData => {
     //return advancedCoastMapping(basicCoastMapping(parseMapFile(mapString)))
     //return basicCoastMapping(parseMapFile(mapString))
 
