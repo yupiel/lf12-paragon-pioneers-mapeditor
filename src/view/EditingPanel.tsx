@@ -6,8 +6,7 @@ import {ITileLoader} from "@/model/ITileLoader.model";
 
 interface IEditingPanel {
     selectTileType: (tile: TILE_TYPE) => void;
-    tileLoader: SimpleTileLoader
-    varTileLoader: ITileLoader
+    tileLoader: ITileLoader
 }
 
 export const EditingPanel = React.forwardRef<HTMLDivElement, IEditingPanel>(({selectTileType, tileLoader, varTileLoader}, ref) => {
@@ -17,7 +16,6 @@ export const EditingPanel = React.forwardRef<HTMLDivElement, IEditingPanel>(({se
         if ((ref as MutableRefObject<HTMLDivElement>).current) {
             (ref as MutableRefObject<HTMLDivElement>).current.style.left="-200px";
         }
-        console.log(key)
     }
 
     const getTiles = () => {
@@ -35,7 +33,7 @@ export const EditingPanel = React.forwardRef<HTMLDivElement, IEditingPanel>(({se
             tileArray.push(
                 <div className={"EditingPanelTileImage"} onClick={() => handleClick(value)}>
                     <img
-                        src={varTileLoader.getSpriteForTile(value)}/>
+                        src={tileLoader.getSpriteForTile(value)}/>
                 </div>
             )
         }

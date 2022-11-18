@@ -15,12 +15,10 @@ export const MapView: React.FC<MapViewProps> = (props) => {
 
     useEffect(() => {
         props.tileLoader.initialize(setLoaded)
-        props.varTileLoader.initialize(setLoaded)
     }, [])
 
     useEffect(() => {
         //todo: Funktion zum Ändern der Karte
-        console.log(selectedTileType + " wurde ausgewählt.")
         setSelectedTile(null)
 
         if (selectedElement!!) {
@@ -33,7 +31,6 @@ export const MapView: React.FC<MapViewProps> = (props) => {
             editingRef.current.style.left = "-100px"
         }
 
-        console.log(selectedTileType)
     }, [selectedTileType])
 
     const onClickTile = (tile: Tile, event: React.MouseEvent<HTMLDivElement>) => {
@@ -78,7 +75,7 @@ export const MapView: React.FC<MapViewProps> = (props) => {
                 })
             }
 
-            <EditingPanel selectTileType={setSelectedTileType} ref={editingRef} tileLoader={props.tileLoader} varTileLoader={props.varTileLoader} />
+            <EditingPanel selectTileType={setSelectedTileType} ref={editingRef} tileLoader={props.tileLoader} />
         </div>
     )
 }
@@ -86,5 +83,4 @@ export const MapView: React.FC<MapViewProps> = (props) => {
 interface MapViewProps {
     mapData: MapData
     tileLoader: ITileLoader
-    varTileLoader: ITileLoader
 }
