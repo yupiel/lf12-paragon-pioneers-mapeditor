@@ -18,7 +18,9 @@ export const MapView: React.FC<MapViewProps> = (props) => {
     }, [])
 
     useEffect(() => {
-        if (selectedTileType !== null && selectedTileType !== undefined
+        if (selectedTileType === null) return
+
+        if (selectedTileType !== undefined
             && selectedTile?.tileType !== selectedTileType
         ) {
             const mapData = structuredClone(props.mapData)
@@ -40,6 +42,8 @@ export const MapView: React.FC<MapViewProps> = (props) => {
         if (editingRef.current) {
             editingRef.current.style.left = "-100px"
         }
+
+        setSelectedTileType(null)
 
     }, [selectedTileType])
 
