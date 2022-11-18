@@ -1,9 +1,10 @@
-import React, {ChangeEvent, useRef, useEffect} from "react";
-import "@/scss/uploadMap.scss"
+import React, {ChangeEvent, useRef, useEffect} from "react"
+import {uploadMap} from '@/controller/file.controller'
 import uploadFileIcon from "@/assets/upload_icon.svg"
+import "@/scss/uploadMap.scss"
 
 interface UploadMapProps {
-    setMap:  (map: File) => void
+    handleUploadMap:  (mapString: string) => void
 }
 
 export const UploadMap = (props: UploadMapProps) => {
@@ -64,7 +65,7 @@ export const UploadMap = (props: UploadMapProps) => {
         }
 
         if (files && files.length) {
-            props.setMap(files[0])
+            uploadMap(files[0], props.handleUploadMap)
         }
     }
 

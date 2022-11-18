@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { MapData } from "@/model/map.model";
-import { Tile } from "@/model/tile.model";
-import "@/scss/mapView.scss"
+import { Tile, TILE_TYPE } from "@/model/tile.model";
 import { EditingPanel } from "@/view/EditingPanel";
-import { ITileLoader } from "@/model/ITileLoader.model";
+import { ITileLoader } from "@/model/tile-loader.model";
+import "@/scss/mapView.scss"
 
 export const MapView: React.FC<MapViewProps> = (props) => {
     const [loaded, setLoaded] = useState<boolean>(false)
@@ -18,7 +18,16 @@ export const MapView: React.FC<MapViewProps> = (props) => {
     }, [])
 
     useEffect(() => {
-        //todo: Funktion zum Ändern der Karte
+        if (selectedTileType !== null && selectedTileType !== undefined
+            && selectedTile?.tileType !== selectedTileType
+        ) {
+            const mapData = structuredClone(props.mapData)
+            mapData.tiles[selectedTile!.position.y][selectedTile!.position.x].tileType = selectedTileType as TILE_TYPE
+            mapData.tiles[selectedTile!.position.y][selectedTile!.position.x].tileVariation = undefined
+
+            props.handleMapChange(mapData)
+        }
+
         console.log(selectedTileType + " wurde ausgewählt.")
         setSelectedTile(null)
 
@@ -36,10 +45,9 @@ export const MapView: React.FC<MapViewProps> = (props) => {
     }, [selectedTileType])
 
     const onClickTile = (tile: Tile, event: React.MouseEvent<HTMLDivElement>) => {
-        // todo: add logic for Map Editing here
         if (selectedTile && tile.position.x == selectedTile.position.x && tile.position.y == selectedTile.position.y) {
             setSelectedTile(null)
-            event.currentTarget.style.boxShadow ="";
+            event.currentTarget.style.boxShadow = "";
             setSelectedElement(null)
             if (editingRef.current) {
                 editingRef.current.style.left = "-200px"
@@ -76,7 +84,7 @@ export const MapView: React.FC<MapViewProps> = (props) => {
                     })
                 })
             }
-            
+
             <EditingPanel selectTileType={setSelectedTileType} ref={editingRef} tileLoader={props.tileLoader} />
         </div>
     )
@@ -85,4 +93,5 @@ export const MapView: React.FC<MapViewProps> = (props) => {
 interface MapViewProps {
     mapData: MapData
     tileLoader: ITileLoader
+    handleMapChange: (mapData: MapData) => void
 }

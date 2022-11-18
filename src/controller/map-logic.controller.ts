@@ -18,7 +18,7 @@ const tileVariationInitial = new Map<string, GRASS_VARIATION>([
     ['3', GRASS_VARIATION.THREE_TREES]
 ])
 
-const parseMapFile = (fileContent: string): MapData => {
+const parseMapString = (fileContent: string): MapData => {
     const contentInLines = fileContent.split(/\r?\n/)
     const sanitizedLines = contentInLines.filter(item => {
         return !item.startsWith('*')
@@ -53,44 +53,13 @@ const parseMapFile = (fileContent: string): MapData => {
     return mapData
 }
 
-export const visualizeCoast = new Map<COAST_VARIATION | undefined, string>([
-    [COAST_VARIATION.L_SMALL, '╚'],
-    [COAST_VARIATION.L_REVERSE_SMALL, '╔'],
-    [COAST_VARIATION.J_REVERSE_SMALL, '╗'],
-    [COAST_VARIATION.J_SMALL, '╝'],
+export const serializeMapData = (mapData: MapData): string => {
+    let mapStringContent = `
+    ${mapData.name}
+    
+    `
+}
 
-    [COAST_VARIATION.L, 'b╚'],
-    [COAST_VARIATION.L_REVERSE, 'b╔'],
-    [COAST_VARIATION.J_REVERSE, '╗b'],
-    [COAST_VARIATION.J, '╝b'],
-
-    [COAST_VARIATION.STRAIGHT_TOP, '═'],
-    [COAST_VARIATION.STRAIGHT_RIGHT, '║'],
-    [COAST_VARIATION.STRAIGHT_BOTTOM, '═'],
-    [COAST_VARIATION.STRAIGHT_LEFT, '║'],
-])
-
-export const visualizeMountains = new Map<MOUNTAIN_VARIATION | undefined, string>([
-    [MOUNTAIN_VARIATION.STRAIGHT_TOP, '⛰️'],
-    [MOUNTAIN_VARIATION.STRAIGHT_RIGHT, '⛰️\\'],
-    [MOUNTAIN_VARIATION.J_REVERSE_END, '⛰️\\e'],
-    [MOUNTAIN_VARIATION.STRAIGHT_LEFT, '/⛰️'],
-    [MOUNTAIN_VARIATION.L_REVERSE_END, 'e/⛰️'],
-    [MOUNTAIN_VARIATION.STRAIGHT_BOTTOM, '|⛰️|'],
-
-    [MOUNTAIN_VARIATION.L, '╰⛰️'],
-    [MOUNTAIN_VARIATION.J, '⛰️╯'],
-
-    [MOUNTAIN_VARIATION.L_REVERSE, '╭⛰️'],
-    [MOUNTAIN_VARIATION.J_REVERSE, '⛰️╮'],
-])
-
-export const visualizeGrass = new Map<GRASS_VARIATION, string>([
-    [GRASS_VARIATION.NO_TREES, '🌿'],
-    [GRASS_VARIATION.ONE_TREE, '🌿1'],
-    [GRASS_VARIATION.TWO_TREES, '🌿2'],
-    [GRASS_VARIATION.THREE_TREES, '🌿3'],
-])
 
 const runInTileArray = (mapData: MapData,
     func: (rowIndex: number, columnIndex: number) => void)
@@ -464,12 +433,19 @@ const crawlMountainRows = (tiles: Tile[][], rowNum: number, tileNum: number, top
 }
 
 
-const getCoasts = (mapData: MapData) => calculateCoastBigLandmassEdges(calculateCoastBigLandmassEdges(calculateCoastSmallLandmassEdges(calculateCoastStraights(mapData))))
+const calculateCoasts = (mapData: MapData):MapData => calculateCoastBigLandmassEdges(calculateCoastBigLandmassEdges(calculateCoastSmallLandmassEdges(calculateCoastStraights(mapData))))
+const calculateMountains = (mapData: MapData):MapData =>calculateMOuntainSidewardWindings(calculateMountainUpwardWindings(calculateMountainBottomEdges(calculateCoasts(mapData))))
+const calculateMap = (mapData: MapData):MapData => calculateMountains(calculateCoasts(mapData))
 
-export const getIslandMapping = (mapString: string): MapData => {
-    //return advancedCoastMapping(basicCoastMapping(parseMapFile(mapString)))
-    //return basicCoastMapping(parseMapFile(mapString))
+export const calculateIslandMapping = (mapString: string): MapData => calculateMap(parseMapString(mapString))
 
-    return calculateMOuntainSidewardWindings(calculateMountainUpwardWindings(calculateMountainBottomEdges(getCoasts(parseMapFile(mapString)))))
-    //return calculateCoastSmallLandmassEdges(calculateCoastStraights(parseMapFile(mapString)))
+export const reCalculateIslandMapping = (mapData: MapData): MapData => {
+    mapData = runInTileArray(mapData, (rowIndex, columnIndex) => {
+        if(mapData.tiles[rowIndex][columnIndex].tileType !== TILE_TYPE.GRASS_FIELD)
+            mapData.tiles[rowIndex][columnIndex].tileVariation = undefined
+        else 
+            mapData.tiles[rowIndex][columnIndex].tileVariation = GRASS_VARIATION.NO_TREES
+    })
+
+    return calculateMap(mapData)
 }

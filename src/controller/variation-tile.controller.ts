@@ -1,10 +1,9 @@
 import tileSheetUrl from '@/assets/Background_Tiles.png?url'
-import { ITileLoader } from '@/model/ITileLoader.model';
+import { ITileLoader } from '@/model/tile-loader.model';
 import { TILE_TYPE, COAST_VARIATION, GRASS_VARIATION, MOUNTAIN_VARIATION } from '@/model/tile.model'
 import { Vector2 } from '@/model/vector-two.model';
 
 export class VariationTileLoader implements ITileLoader {
-
     tileSheet: HTMLImageElement;
     tileSheetWidth: number;
     tileSheetHeight: number;
@@ -42,8 +41,8 @@ export class VariationTileLoader implements ITileLoader {
         [GRASS_VARIATION.TWO_TREES, { x: 0, y: 0 }],
         [GRASS_VARIATION.THREE_TREES, { x: 0, y: 0 }],
         [TILE_TYPE.WATER, { x: 3, y: 5 }],
-        [TILE_TYPE.MOUNTAIN, { x: 1, y: 0 }],
-        [TILE_TYPE.COAST, { x: 2, y: 0 }],
+        [TILE_TYPE.MOUNTAIN, { x: 1, y: 11 }],
+        [TILE_TYPE.COAST, { x: 2, y: 2 }],
         [TILE_TYPE.GRASS_FIELD, { x: 0, y: 1 }],
     ]);
     coastTileWaterMap: Map<number, Vector2> = new Map<number, Vector2>([
