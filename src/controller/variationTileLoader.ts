@@ -46,6 +46,22 @@ export class VariationTileLoader implements ITileLoader {
         [TILE_TYPE.COAST, { x: 2, y: 0 }],
         [TILE_TYPE.GRASS_FIELD, { x: 0, y: 1 }],
     ]);
+    coastTileWaterMap: Map<number, Vector2> = new Map<number, Vector2>([
+        //small coast water
+        [COAST_VARIATION.L_SMALL, { x: 4, y: 7 }],
+        [COAST_VARIATION.L_REVERSE_SMALL, { x: 4, y: 6 }],
+        [COAST_VARIATION.J_SMALL, { x: 5, y: 7 }],
+        [COAST_VARIATION.J_REVERSE_SMALL, { x: 5, y: 6 }],
+        // big coast water
+        [COAST_VARIATION.L, { x: 0, y: 7 }],
+        [COAST_VARIATION.L_REVERSE, { x: 0, y: 5 }],
+        [COAST_VARIATION.J, { x: 2, y: 7 }],
+        [COAST_VARIATION.J_REVERSE, { x: 2, y: 5 }],
+        [COAST_VARIATION.STRAIGHT_TOP, { x: 1, y: 7 }],
+        [COAST_VARIATION.STRAIGHT_RIGHT, { x: 0, y: 6 }],
+        [COAST_VARIATION.STRAIGHT_BOTTOM, { x: 1, y: 5 }],
+        [COAST_VARIATION.STRAIGHT_LEFT, { x: 2, y: 6 }],
+    ]);
 
     initialized = false
     typeTileMapping = new Map<number, string>()
@@ -90,7 +106,22 @@ export class VariationTileLoader implements ITileLoader {
                 0,
                 50,//this.tileWidth,
                 50);//this.tileHeight);
+            if (this.coastTileWaterMap.has(tileType)) {
+                let tilePos = this.coastTileWaterMap.get(tileType);
+                if (tilePos) {
+                    let imgPos: Vector2 = this.tilePosToImgPos(tilePos);
+                    context.drawImage(this.tileSheet,
+                        imgPos.x,
+                        imgPos.y,
+                        this.tileWidth,
+                        this.tileHeight,
+                        0,
+                        0,
+                        50,//this.tileWidth,
+                        50);//this.tileHeight);
 
+                }
+            }
             return canvas.toDataURL()
         }
         return undefined;
