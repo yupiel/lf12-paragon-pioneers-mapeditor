@@ -4,7 +4,8 @@ import { UploadMap } from "@/view/UploadMap";
 import { MapView } from "@/view/MapView";
 import { MapData } from "@/model/map.model";
 import { SimpleTileLoader } from '@/controller/simpleTileLoader'
-import {parseMapFile} from '@/controller/map-logic-controller'
+import { parseMapFile } from "./controller/mapFileUtils";
+// import {parseMapFile} from '@/controller/map-logic-controller'
 
 export const App = () => {
   const [map, setMap] = useState<MapData | undefined>(undefined)
@@ -14,7 +15,8 @@ export const App = () => {
   const handleMapUpload = (mapFile: File) => {
     const fileReader = new FileReader()
     fileReader.onloadend = (e) => {
-        setMap(parseMapFile(fileReader.result as string))
+        const mapData: MapData = parseMapFile(fileReader.result as string)
+        setMap(mapData)
     }
     fileReader.readAsText(mapFile)
   }
