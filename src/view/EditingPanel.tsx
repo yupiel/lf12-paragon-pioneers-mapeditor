@@ -15,6 +15,7 @@ export const EditingPanel = React.forwardRef<HTMLDivElement, IEditingPanel>(({ s
         if ((ref as MutableRefObject<HTMLDivElement>).current) {
             (ref as MutableRefObject<HTMLDivElement>).current.style.left = "-200px";
         }
+        console.log(key)
     }
 
     const getTiles = () => {

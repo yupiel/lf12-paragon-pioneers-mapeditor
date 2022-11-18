@@ -41,7 +41,6 @@ export const MapView: React.FC<MapViewProps> = (props) => {
             editingRef.current.style.left = "-100px"
         }
 
-        console.log(selectedTileType)
     }, [selectedTileType])
 
     const onClickTile = (tile: Tile, event: React.MouseEvent<HTMLDivElement>) => {
