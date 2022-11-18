@@ -6,11 +6,13 @@ import { MapData } from "@/model/map.model";
 import { SimpleTileLoader } from '@/controller/simpleTileLoader'
 import {parseMapFile, saveMapFile} from "./controller/mapFileUtils";
 // import {parseMapFile} from '@/controller/map-logic-controller'
+import { VariationTileLoader } from "./controller/variationTileLoader";
 
 export const App = () => {
   const [map, setMap] = useState<MapData | undefined>(undefined)
 
   const tileLoader = new SimpleTileLoader()
+  const varTileLoader = new VariationTileLoader()
 
   const handleMapUpload = (mapFile: File) => {
     const fileReader = new FileReader()
