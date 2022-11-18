@@ -2,13 +2,15 @@ import React, { MutableRefObject } from "react";
 import "@/scss/editingPanel.scss";
 import {GRASS_VARIATION, TILE_TYPE} from "@/model/tile.model"
 import {SimpleTileLoader} from "@/controller/simpleTileLoader";
+import {ITileLoader} from "@/model/ITileLoader.model";
 
 interface IEditingPanel {
     selectTileType: (tile: TILE_TYPE) => void;
     tileLoader: SimpleTileLoader
+    varTileLoader: ITileLoader
 }
 
-export const EditingPanel = React.forwardRef<HTMLDivElement, IEditingPanel>(({selectTileType, tileLoader}, ref) => {
+export const EditingPanel = React.forwardRef<HTMLDivElement, IEditingPanel>(({selectTileType, tileLoader, varTileLoader}, ref) => {
 
     const handleClick = (key: number) => {
         selectTileType(key)
@@ -33,7 +35,7 @@ export const EditingPanel = React.forwardRef<HTMLDivElement, IEditingPanel>(({se
             tileArray.push(
                 <div className={"EditingPanelTileImage"} onClick={() => handleClick(value)}>
                     <img
-                        src={tileLoader.getSpriteForTile(value)}/>
+                        src={varTileLoader.getSpriteForTile(value)}/>
                 </div>
             )
         }

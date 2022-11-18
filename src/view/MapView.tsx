@@ -15,6 +15,7 @@ export const MapView: React.FC<MapViewProps> = (props) => {
 
     useEffect(() => {
         props.tileLoader.initialize(setLoaded)
+        props.varTileLoader.initialize(setLoaded)
     }, [])
 
     useEffect(() => {
@@ -77,7 +78,7 @@ export const MapView: React.FC<MapViewProps> = (props) => {
                 })
             }
 
-            <EditingPanel selectTileType={setSelectedTileType} ref={editingRef} tileLoader={props.tileLoader} />
+            <EditingPanel selectTileType={setSelectedTileType} ref={editingRef} tileLoader={props.tileLoader} varTileLoader={props.varTileLoader} />
         </div>
     )
 }
@@ -85,4 +86,5 @@ export const MapView: React.FC<MapViewProps> = (props) => {
 interface MapViewProps {
     mapData: MapData
     tileLoader: ITileLoader
+    varTileLoader: ITileLoader
 }
