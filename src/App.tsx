@@ -3,10 +3,8 @@ import { useState } from "react";
 import { UploadMap } from "@/view/UploadMap";
 import { MapView } from "@/view/MapView";
 import { MapData } from "@/model/map.model";
-import { SimpleTileLoader } from '@/controller/simpleTileLoader'
-import {parseMapFile, saveMapFile} from "./controller/mapFileUtils";
-// import {parseMapFile} from '@/controller/map-logic-controller'
-import { VariationTileLoader } from "./controller/variationTileLoader";
+import {parseMapFile, saveMapFile} from "@/controller/mapFileUtils";
+import { VariationTileLoader } from "@/controller/variationTileLoader";
 import { getIslandMapping } from '@/controller/map-logic-controller'
 
 export const App = () => {
