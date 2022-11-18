@@ -4,7 +4,7 @@ import { UploadMap } from "@/view/UploadMap";
 import { MapView } from "@/view/MapView";
 import { MapData } from "@/model/map.model";
 import { SimpleTileLoader } from '@/controller/simpleTileLoader'
-import { parseMapFile } from "./controller/mapFileUtils";
+import {parseMapFile, saveMapFile} from "./controller/mapFileUtils";
 // import {parseMapFile} from '@/controller/map-logic-controller'
 
 export const App = () => {
@@ -22,7 +22,15 @@ export const App = () => {
   }
 
   const saveMap = () => {
-    //todo: add function to save map
+    if (map) {
+      let file = saveMapFile(map)
+      const anchor = document.createElement('a');
+      anchor.href = file;
+      anchor.download = map?.name;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+    }
   }
 
   return (
